@@ -1,16 +1,8 @@
 #include "client.hpp"
 
 Client::Client(std::string urlToTargetServer) 
-    : 
-        urlToTargetServer_(urlToTargetServer),
-        ssl_context(boost::asio::ssl::context::sslv23),
-        ssl_socket(io_service, ssl_context)
-{
-    ssl_context.set_options(
-        boost::asio::ssl::context::default_workarounds |
-        boost::asio::ssl::context::no_sslv2 |
-        boost::asio::ssl::context::no_sslv3
-    );
+    : urlToTargetServer_(urlToTargetServer){
+    socket.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(HOST), PORT));
 }
 
 
@@ -44,12 +36,10 @@ std::string Client::parseURLPath() {
 }
 
 
-void Client::sendRequestAndGetResponse() {
+void Client::sendRequest() {
     uint32_t gotProtocol = parseURLProtocol();
     std::string gotHost = parseURLHost();
     std::string gotPath = parseURLPath();
-
-    socket.connect(ip::tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 8000));
 
     // Sending request to server
     std::string getReqString = "GET " + gotPath + " HTTP/1.1\r\nHost: " + gotHost + "\r\nConnection: keep-alive\r\n\r\n";
@@ -60,7 +50,10 @@ void Client::sendRequestAndGetResponse() {
     } else {
         std::cerr << "Failed to send request" << std::endl;
     }
+}
 
+
+void Client::getResponse() {
     // Getting response from server
     boost::asio::streambuf receiveBuffer;
     boost::asio::read(socket, receiveBuffer, boost::asio::transfer_all(), error);
@@ -70,4 +63,10 @@ void Client::sendRequestAndGetResponse() {
         const char* data = boost::asio::buffer_cast<const char*>(receiveBuffer.data());
         std::cout << data << std::endl;
     }
+}
+
+
+void Client::startProcess() {
+    sendRequest();
+    getResponse();
 }

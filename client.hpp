@@ -6,15 +6,22 @@
 #include <boost/asio/ssl.hpp>
 #include <cstdint>
 
+// constants
+const char* HOST = "127.0.0.1";
+const int PORT = 8000;
+
 class Client {
 public:
     Client(std::string& urlToTargetServer);
     ~Client();
-    void sendRequestAndGetResponse();
+
+    void startProcess();
+
+    void sendRequest();
+    void getResponse();
 private:
     boost::asio::io_service io_service;
-    boost::asio::ssl::context ssl_context;
-    boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket;
+    booost::asio::ip::tcp::socket socket(io_service);
     std::string urlToTargetServer_;
 
     uint32_t parseURLProtocol();
