@@ -1,7 +1,7 @@
 #include "client.hpp"
 
 Client::Client(std::string urlToTargetServer) 
-    : urlToTargetServer_(urlToTargetServer){
+    : urlToTargetServer_(urlToTargetServer), socket(io_service){
     socket.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(HOST), PORT));
 }
 

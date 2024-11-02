@@ -21,7 +21,7 @@ public:
     void getResponse();
 private:
     boost::asio::io_service io_service;
-    booost::asio::ip::tcp::socket socket(io_service);
+    booost::asio::ip::tcp::socket socket;
     std::string urlToTargetServer_;
 
     uint32_t parseURLProtocol();

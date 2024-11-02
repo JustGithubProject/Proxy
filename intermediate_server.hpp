@@ -1,5 +1,10 @@
 #pragma once
 
+#include <boost/asio.hpp>
+#include <vector>
+
+const KBYTE = 1024;
+
 class IntermediateServer {
 public:
     IntermediateServer();
@@ -9,5 +14,8 @@ public:
     void redirectRequest();
 private:
     boost::asio::io_context io_context;
-    boost::asio::ip::tcp::acceptor acceptor(io_context, boost::asio::ip::tcp::endpoint(tcp::v4(), 13));
+    boost::asio::ip::tcp::acceptor acceptor;
+
+    // Buffer to store incoming data
+    std::vector<char> buffer;
 };
