@@ -1,16 +1,21 @@
 #include "client.hpp"
 
-Client::Client(std::string urlToTargetServer) 
+// constants
+const char* HOST_OF_PROXY = "127.0.0.1";
+const int PORT_OF_PROXY = 9030;
+
+
+Client::Client(std::string& urlToTargetServer) 
     : urlToTargetServer_(urlToTargetServer), socket(io_service){
-    socket.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(HOST), PORT));
+    socket.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(HOST_OF_PROXY), PORT_OF_PROXY));
 }
 
 
 Client::~Client() {}
 
 
-uint32_t parseURLProtocol() {
-    size_t pos = urlToTargetServer.find("://");
+uint32_t Client::parseURLProtocol() {
+    size_t pos = urlToTargetServer_.find("://");
     if (pos == 5) {
         return 443;
     }
@@ -19,18 +24,18 @@ uint32_t parseURLProtocol() {
 
 
 std::string Client::parseURLHost() {
-    size_t posEndOfProtocol = urlToTargetServer.find("://");
+    size_t posEndOfProtocol = urlToTargetServer_.find("://");
     size_t posStartOfHost = posEndOfProtocol + 3;
-    std::string hostWithPath = urlToTargetServer.substr(posStartOfHost);
+    std::string hostWithPath = urlToTargetServer_.substr(posStartOfHost);
     size_t posEndOfHost = hostWithPath.find("/");
-    return hostWithPath.substr(0, posEndOfHost)
+    return hostWithPath.substr(0, posEndOfHost);
 }
 
 
 std::string Client::parseURLPath() {
-    size_t posEndOfProtocol = urlToTargetServer.find("://");
+    size_t posEndOfProtocol = urlToTargetServer_.find("://");
     size_t posStartOfHost = posEndOfProtocol + 3;
-    std::string hostWithPath = urlToTargetServer.substr(posStartOfHost);
+    std::string hostWithPath = urlToTargetServer_.substr(posStartOfHost);
     size_t posEndOfHost = hostWithPath.find("/");
     return hostWithPath.substr(posEndOfHost);
 }
@@ -55,6 +60,7 @@ void Client::sendRequest() {
 
 void Client::getResponse() {
     // Getting response from server
+    boost::system::error_code error;
     boost::asio::streambuf receiveBuffer;
     boost::asio::read(socket, receiveBuffer, boost::asio::transfer_all(), error);
     if (error && error != boost::asio::error::eof) {
