@@ -5,7 +5,7 @@
 const int KBYTE = 1024;
 
 IntermediateServer::IntermediateServer()
-    : acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 13)),
+    : acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 9030)),
     buffer(KBYTE)
 {}
 IntermediateServer::~IntermediateServer() {}
